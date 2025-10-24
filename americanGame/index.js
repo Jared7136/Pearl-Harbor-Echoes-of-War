@@ -135,7 +135,7 @@ class Invader {
 		}
 
 		const image = new Image()
-		image.src = './img/invader.png'
+		image.src = './img/japaneseplane.png'
 		image.onload = () => {
 			const scale = 1
 			this.image = image
@@ -191,8 +191,8 @@ class Grid {
 
 		this.invaders = []
 
-		const columns = Math.floor(Math.random() * 10 + 5)
-		const rows = Math.floor(Math.random() * 5 + 2)
+		const columns = Math.floor(Math.random() * 5 + 5)
+		const rows = Math.floor(Math.random() * 2 + 2)
 
 		this.width = columns * 30
 
@@ -270,7 +270,7 @@ function createParticles({object, color}) {
 function animate() {
 	if (!game.active) return
 	requestAnimationFrame(animate)
-	c.fillStyle = 'gray'
+	c.fillStyle = 'black'
 	c.fillRect(0, 0, canvas.width, canvas.height)
 	player.update()
 	particles.forEach((particle, i) => {
@@ -360,7 +360,7 @@ function animate() {
 
 						// remove invader and projectile
 						if (invaderFound && projectileFound) {
-							score += 100
+							score += 50
 							scoreEl.innerHTML = score
 							createParticles({
 								object: invader
