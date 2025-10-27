@@ -208,7 +208,7 @@ class Grid {
 				)
 			}
 		}
-		console.log(this.invaders)
+		// console.log(this.invaders)
 	}
 
 	update() {
@@ -246,8 +246,10 @@ let frames = 0
 let randomInterval = Math.floor(Math.random() * 500 + 500)
 let game = {
 	over: false,
-	active: true
+	active: false
 }
+let canShoot = true
+let shootCooldown = 100
 let score = 0
 
 function createParticles({object, color}) {
@@ -268,10 +270,12 @@ function createParticles({object, color}) {
 }
 
 function animate() {
-	if (!game.active) return
 	requestAnimationFrame(animate)
-	c.fillStyle = 'black'
+
+	// clear / background
+	c.fillStyle = '#44A7C4'
 	c.fillRect(0, 0, canvas.width, canvas.height)
+
 	player.update()
 	particles.forEach((particle, i) => {
 		if (particle.opacity <= 0) {
@@ -283,32 +287,32 @@ function animate() {
 		}
 	})
 
-	console.log(particles)
-
 	invaderProjectiles.forEach ((invaderProjectile, index) => {
 		if (invaderProjectile.position.y + invaderProjectile.height >= canvas.height) {
 			setTimeout(() => {
 				invaderProjectiles.splice(index, 1)
 			}, 0)
-		} else invaderProjectile.update()		
-
+		} else invaderProjectile.update()
 
 		// projectile hits player
 		if (invaderProjectile.position.y + invaderProjectile.height >= player.position.y &&
-			invaderProjectile.position.x + invaderProjectile.width >= player.position.x && 
+			invaderProjectile.position.x + invaderProjectile.width >= player.position.x &&
 			invaderProjectile.position.x <= player.position.x + player.width
-			) {
+		) {
 			setTimeout(() => {
 				invaderProjectiles.splice(index, 1)
 				player.opacity = 0
 				game.over = true
+				// show game over AFTER the 2s delay (keeps particle explosion visible)
+				setTimeout(() => {
+					document.getElementById('gameOver').style.display = 'block'
+				}, 2000)
 			}, 0)
 
 			setTimeout(() => {
 				game.active = false
 			}, 2000)
 
-			console.log('you lose')
 			createParticles({
 				object: player,
 				color: 'white'
@@ -316,100 +320,96 @@ function animate() {
 		}
 	})
 
-	projectiles.forEach((projectile, index) => {
-		if(projectile.position.y + projectile.radius <= 0) {
-			setTimeout(() => {
-				projectiles.splice(index, 1)
-			}, 0)
-		} else {
-			projectile.update()
-		}
-	})
+	if (game.active) {
+		// update projectiles
+		projectiles.forEach((projectile, index) => {
+			if (projectile.position.y + projectile.radius <= 0) {
+				setTimeout(() => {
+					projectiles.splice(index, 1)
+				}, 0)
+			} else {
+				projectile.update()
+			}
+		})
 
-	grids.forEach((grid, gridIndex) => {
-		grid.update()
+		// update grids and invaders (spawning, shooting, collisions)
+		grids.forEach((grid, gridIndex) => {
+			grid.update()
 
-			// spawn projectiles
-	if (frames % 100 === 0 && grid.invaders.length > 0){
-		grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(
-			invaderProjectiles)
-	}
+			// spawn invader projectile
+			if (frames % 100 === 0 && grid.invaders.length > 0){
+				grid.invaders[Math.floor(Math.random() * grid.invaders.length)].shoot(invaderProjectiles)
+			}
 
-		grid.invaders.forEach((invader, i) => {
-			invader.update({ velocity: grid.velocity })
+			grid.invaders.forEach((invader, i) => {
+				invader.update({ velocity: grid.velocity })
 
-			// projectiles hit enemy
-			projectiles.forEach((projectile, j) => {
-				if (projectile.position.y - projectile.radius <= 
-					invader.position.y + invader.height &&
-					projectile.position.x + projectile.radius >=
-					invader.position.x && 
-					projectile.position.x - projectile.radius <= 
-					invader.position.x + invader.width && 
-					projectile.position.y + projectile.radius >= 
-					invader.position.y
-				) {
+				// projectile hits enemy
+				projectiles.forEach((projectile, j) => {
+					if (
+						projectile.position.y - projectile.radius <= invader.position.y + invader.height &&
+						projectile.position.x + projectile.radius >= invader.position.x &&
+						projectile.position.x - projectile.radius <= invader.position.x + invader.width &&
+						projectile.position.y + projectile.radius >= invader.position.y
+					) {
+						setTimeout(() => {
+							const invaderFound = grid.invaders.find((invader2) => invader2 === invader)
+							const projectileFound = projectiles.find((projectile2) => projectile2 === projectile)
 
-					setTimeout(() => {
-						const invaderFound = grid.invaders.find(
-							(invader2) => invader2 === invader
-						)
-						const projectileFound = projectiles.find(
-							(projectile2) => projectile2 === projectile
-						)
+							if (invaderFound && projectileFound) {
+								score += 50
+								scoreEl.innerHTML = score
+								createParticles({ object: invader })
+								grid.invaders.splice(i, 1)
+								projectiles.splice(j, 1)
+							}
 
-						// remove invader and projectile
-						if (invaderFound && projectileFound) {
-							score += 50
-							scoreEl.innerHTML = score
-							createParticles({
-								object: invader
-							})
-
-							grid.invaders.splice(i, 1)
-							projectiles.splice(j, 1)
-						}
-
-						if (grid.invaders.length > 0) {
-							const firstInvader = grid.invaders[0]
-							const lastInvader = grid.invaders[grid.invaders.length - 1]
-
-							grid.width = lastInvader.position.x - firstInvader.position.x + lastInvader.width
-							grid.position.x = firstInvader.position.x
-						} else {
-							grids.splice(gridIndex, 1)
-						}
-					}, 0)
-				}
+							if (grid.invaders.length > 0) {
+								const firstInvader = grid.invaders[0]
+								const lastInvader = grid.invaders[grid.invaders.length - 1]
+								grid.width = lastInvader.position.x - firstInvader.position.x + lastInvader.width
+								grid.position.x = firstInvader.position.x
+							} else {
+								grids.splice(gridIndex, 1)
+							}
+						}, 0)
+					}
+				})
 			})
 		})
-	})
 
-	if (keys.a.pressed && player.position.x >= 0) {
-		player.velocity.x = -7
-		player.rotation = -0.15
-	} else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {
-		player.velocity.x = 7
-		player.rotation = 0.15
+		// player movement
+		if (keys.a.pressed && player.position.x >= 0) {
+			player.velocity.x = -7
+			player.rotation = -0.15
+		} else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {
+			player.velocity.x = 7
+			player.rotation = 0.15
+		} else {
+			player.velocity.x = 0
+			player.rotation = 0
+		}
+
+		// spawn new grids
+		if (frames % randomInterval === 0) {
+			grids.push(new Grid())
+			randomInterval = Math.floor(Math.random() * 500 + 500)
+			frames = 0
+		}
+
+		frames++
 	} else {
-		player.velocity.x = 0
-		player.rotation = 0
 	}
-
-
-	// console.log(frames)
-	// spawning enemies
-	if (frames % randomInterval === 0) {
-		grids.push(new Grid())
-		randomInterval = Math.floor(Math.random() * 500 + 500)
-		frames = 0
-		console.log(randomInterval)
+	// Check for win condition
+	if (score >= 300 && game.active) {
+	    game.active = false;
+	    document.getElementById("message").innerText = "You Win!";
+	    projectiles.length = 0;
+	    const winButton = document.getElementById("winButton");
+	    winButton.style.display = "block"; // show button
 	}
-
-
-
-	frames++
 }
+
 
 animate()
 
@@ -427,20 +427,25 @@ addEventListener('keydown', ({key}) => {
 			break
 		case ' ':
 			// console.log('space')
-			projectiles.push(
-				new Projectile({		
-					position: {
-						x:player.position.x + player.width / 2,
-						y:player.position.y
-					},
-					velocity: {
-						x:0,
-						y:-10
-					}
-				})
-			)
+			if (game.active && canShoot) {
+				projectiles.push(
+					new Projectile({
+						position: {
+							x: player.position.x + player.width / 2,
+							y: player.position.y
+						},
+						velocity: {
+							x: 0,
+							y: -10
+						}
+					})
+				)
 
-			// console.log(projectiles)
+				canShoot = false
+				setTimeout(() => {
+					canShoot = true
+				}, shootCooldown)
+			}
 			break
 	}
 })
@@ -460,3 +465,16 @@ addEventListener('keyup', ({key}) => {
 			break
 	}
 })
+
+document.getElementById('startBtn').addEventListener('click', () => {
+	document.getElementById('startMenu').style.display = 'none'
+	game.active = true
+})
+
+document.getElementById('restartBtn').addEventListener('click', () => {
+		location.reload() 
+})
+
+document.getElementById("winButton").addEventListener("click", () => {
+    window.location.href = "cutscene1.html";
+});
