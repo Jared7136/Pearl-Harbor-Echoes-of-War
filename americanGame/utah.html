@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogue Box Typing Effect</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    font-family: sans-serif;
+    background-image: url('file:///C:/Users/jherv/OneDrive/Desktop/cutscenes%20for%20US/img/USS_UTAH.png');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+  .dialogue-container {
+    position: 25%;
+    display: flex;
+    align-items: flex-end;
+    width: 80%;
+    margin-bottom: 50px;
+  }
+  .dialogue-box {
+    flex: 1;
+    padding: 20px 50px 20px 20px;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.4;
+    position: 25%;
+    backdrop-filter: blur(8px); /* background blur */
+    background: rgba(0, 0, 0, 0.5);
+    min-height: 80px;
+  }
+  .character {
+    margin-left: 20px;
+    max-height: 300px;
+    border-radius: 8px;
+  }
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    background: white;
+    animation: blink 0.7s steps(1) infinite;
+    margin-left: 2px;
+  }
+  @keyframes blink {
+    50% { background: transparent; }
+  }
+
+  /* Arrow button */
+  .next-arrow {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    animation: bounce 1s infinite;
+  }
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+</style>
+</head>
+<body>
+  <div class="dialogue-container">
+    <div class="dialogue-box">
+      <p id="dialogue"></p><span class="cursor"></span>
+      <div class="next-arrow" id="nextBtn">▶</div>
+    </div>
+    <img src="https://i.imgur.com/4AiXzf8.png" alt="Character" class="character">
+  </div>
+
+<script>
+  const dialogues = [
+  "Our ship—USS Utah. She’s moored off the west side, quiet and still."
+"We hear the first bombs fall, thinking it’s just drills again."
+"Then the real explosions hit—no warning, no mercy."
+"A blast rips through the hull. The deck tilts hard to port."
+"She’s rolling over—too fast, too sudden to understand."
+"Sailors are shouting, jumping into the sea, trying to pull each other out."
+"Within minutes, she’s on her side. The harbor swallows her whole."
+"Utah wasn’t even armed for battle—just a training ship, caught in the storm."
+"We look around—smoke, fire, silence where life used to be."
+"The attack is over... but it feels like something inside us sank too."
+  ];
+
+  let dialogueIndex = 0; // which line of dialogue we're on
+  let charIndex = 0; // current character index
+  const dialogueEl = document.getElementById("dialogue");
+  const cursor = document.querySelector(".cursor");
+
+  function typeText() {
+    if (charIndex < dialogues[dialogueIndex].length) {
+      dialogueEl.innerHTML += dialogues[dialogueIndex].charAt(charIndex);
+      charIndex++;
+      setTimeout(typeText, 60); // typing speed
+    }
+  }
+
+  function nextDialogue() {
+    // If still typing, finish instantly
+    if (charIndex < dialogues[dialogueIndex].length) {
+      dialogueEl.innerHTML = dialogues[dialogueIndex];
+      charIndex = dialogues[dialogueIndex].length;
+      return;
+    }
+
+    // Otherwise, go to next dialogue
+    if (dialogueIndex < dialogues.length - 1) {
+      dialogueIndex++;
+      charIndex = 0;
+      dialogueEl.innerHTML = "";
+      typeText();
+    } else {
+      // End of dialogues
+      cursor.style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+    }
+  }
+
+  // Start first dialogue
+  window.onload = typeText;
+
+  // Click arrow to advance
+  document.getElementById("nextBtn").addEventListener("click", nextDialogue);
+
+  // Press space to advance
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault(); // prevent page scrolling
+      nextDialogue();
+    }
+  });
+</script>
+</body>
+</html> 
