@@ -476,5 +476,5 @@ document.getElementById('restartBtn').addEventListener('click', () => {
 })
 
 document.getElementById("winButton").addEventListener("click", () => {
-    window.location.href = "cutscene1.html";
+    window.location.href = "./cutscene1.html";
 });
