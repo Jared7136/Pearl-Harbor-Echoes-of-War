@@ -116,6 +116,30 @@
       // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+
+      //continue button
+      const continueBtn = document.createElement("button");
+      continueBtn.textContent = "Continue";
+      continueBtn.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        padding: 12px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px white;
+      `;
+      continueBtn.onmouseover = () => continueBtn.style.background = "rgba(255,255,255,0.2)";
+      continueBtn.onmouseout = () => continueBtn.style.background = "rgba(0,0,0,0.6)";
+
+      continueBtn.onclick = () => window.location.href = "cutscene2.html"; // next level
+
+      document.querySelector(".dialogue-box").appendChild(continueBtn);
     }
   }
 
