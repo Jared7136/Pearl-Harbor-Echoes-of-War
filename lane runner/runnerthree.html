@@ -1,0 +1,376 @@
+<!DOCTYPE HTML>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<link href="style.css" type="text/css" rel="stylesheet" />
+<title>Echoes of War: Japan Side</title>
+</head>
+<body>
+<div id="gameArea">
+  <canvas id="game"></canvas>
+  <div class="hud">
+    <div>Score: <span id="score">0</span></div>
+    <div>Time: <span id="time">60</span>s</div>
+    <div>Lives: <span id="lives">3</span></div>
+  </div>
+</div>
+
+
+
+<script>
+
+const minScore = 2000; // minimum score required to pass level
+
+  // === BASIC CONFIG ===
+const canvas = document.getElementById("game");
+const ctx = canvas.getContext("2d");
+// === LOAD SPRITES ===
+const sprites = {
+  player: new Image(),
+  fighter: new Image(),
+  bird: new Image(),
+  mine: new Image(),
+  bullet: new Image(),
+};
+
+sprites.player.src = "player.png";
+sprites.fighter.src = "fighter.png";
+sprites.bird.src = "bird.png";
+sprites.mine.src = "mine.png";
+sprites.bullet.src = "bullet.png";
+
+let cw, ch;
+
+let game = {
+  running: false,
+  elapsed: 0,
+  timer: 60,
+  score: 0,
+  lives: 3,
+  laneCount: 3,
+  laneY: [],
+  obstacles: [],
+  projectiles: [],
+  spawnTimer: 0,
+  spawnInterval: 900,
+  educationalMessages: [
+    "The attack on Pearl Harbor occurred December 7, 1941.",
+    "The Japanese strike force used six aircraft carriers.",
+    "Radio silence and careful planning were key to the operation."
+  ],
+  nextMsgIndex: 0,
+};
+
+// === LANE CALC ===
+function computeLanes() {
+  const top = ch * 0.2;
+  const bottom = ch * 0.8;
+  const gap = (bottom - top) / (game.laneCount - 1);
+  game.laneY = [];
+  for (let i = 0; i < game.laneCount; i++) game.laneY.push(top + i * gap);
+}
+
+// === PLAYER ===
+class Player {
+  constructor() {
+    this.lane = 1;
+    this.x = cw * 0.15;
+    this.y = 0;
+    this.radius = 20;
+    this.color = "#ffd77a";
+    this.reload = 0;
+    this.reloadTime = 500;
+  }
+
+  moveTo(lane) {
+    this.lane = Math.max(0, Math.min(game.laneCount - 1, lane));
+  }
+  update(dt) {
+    if (this.reload > 0) this.reload = Math.max(0, this.reload - dt);
+    const targetY = game.laneY[this.lane];
+    this.y += (targetY - this.y) * 0.25;
+  }
+  draw(ctx) {
+  ctx.save();
+  ctx.translate(this.x, this.y);
+  ctx.drawImage(sprites.player, -20, -32, 80, 64);
+  ctx.restore();
+}
+
+  shoot() {
+    if (this.reload > 0) return;
+    this.reload = this.reloadTime;
+    game.projectiles.push(new Projectile(this.x + 36, this.y));
+  }
+}
+
+// enemies
+class Obstacle {
+  constructor(type, lane, speed) {
+    this.type = type;
+    this.lane = lane;
+    this.x = cw + 80;
+    this.y = game.laneY[lane];
+    this.speed = speed;
+    this.radius = type === "mine" ? 20 : type === "bird" ? 14 : 18;
+    this.hit = false;
+  }
+
+  update(dt) { this.x -= this.speed * (dt / 16); }
+  draw(ctx) {
+  ctx.save();
+  ctx.translate(this.x, this.y);
+  let img = sprites.mine; // default
+  if (this.type === "fighter") img = sprites.fighter;
+  else if (this.type === "bird") img = sprites.bird;
+  ctx.drawImage(img, -32, -32, 80, 64);
+  ctx.restore();
+}
+
+}
+
+class Projectile {
+  constructor(x, y) { this.x = x; this.y = y; this.speed = 10; this.radius = 6; this.dead = false; }
+  update(dt) { this.x += this.speed * (dt / 16); if (this.x > cw + 50) this.dead = true; }
+  draw(ctx) {
+  ctx.save();
+  ctx.translate(this.x, this.y);
+  ctx.drawImage(sprites.bullet, -8, -8, 16, 16);
+  ctx.restore();
+}
+
+}
+
+
+// inputs
+let player;
+const keys = {};
+window.addEventListener("keydown", e => {
+  keys[e.code] = true;
+  if (e.code === "ArrowUp" || e.code === "KeyW") player.moveTo(player.lane - 1);
+  if (e.code === "ArrowDown" || e.code === "KeyS") player.moveTo(player.lane + 1);
+  if (e.code === "Space") player.shoot();
+});
+window.addEventListener("keyup", e => keys[e.code] = false);
+
+// collisons
+function checkCollisions() {
+  game.projectiles.forEach(p => {
+    game.obstacles.forEach(o => {
+      //if (!o.hit && Math.hypot(p.x - o.x, p.y - o.y) < p.radius + o.radius) {
+        //o.hit = true; p.dead = true; game.score += o.type === "fighter" ? 50 : 15;
+      //}
+      if (!o.hit && Math.hypot(p.x - o.x, p.y - o.y) < p.radius + o.radius) {
+  o.hit = true;
+  p.dead = true;
+  game.score += 100; // +100 points per enemy killed
+}
+    });
+  });
+  game.obstacles.forEach(o => {
+    if (!o.hit && Math.hypot(player.x - o.x, player.y - o.y) < player.radius + o.radius - 2) {
+      o.hit = true; game.lives -= 1; if (game.lives <= 0) endGame(false);
+    }
+  });
+}
+
+// other
+function spawnRandom() {
+  const r = Math.random();
+  let type = "mine";
+  if (r > 0.85) type = "fighter"; else if (r > 0.6) type = "bird";
+  const lane = Math.floor(Math.random() * game.laneCount);
+  const speed = 3 + Math.random() * 3 + game.elapsed / 20000;
+  game.obstacles.push(new Obstacle(type, lane, speed));
+}
+
+function updateHUD() {
+  document.getElementById("score").innerText = Math.floor(game.score);
+  document.getElementById("time").innerText = Math.ceil(game.timer);
+  document.getElementById("lives").innerText = game.lives;
+}
+
+// Remove previous endGame implementation and replace with this:
+function endGame(win) {
+  // stop the game loop
+  game.running = false;
+
+  // remove any existing overlay
+  const existing = document.getElementById('gameOverlay');
+  if (existing) existing.remove();
+
+  // create overlay
+  const overlay = document.createElement('div');
+  overlay.id = 'gameOverlay';
+  Object.assign(overlay.style, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '100vw',
+    height: '100vh',
+    background: 'rgba(0,0,0,0.6)',
+    display: 'flex',
+    'alignItems': 'center',
+    'justifyContent': 'center',
+    zIndex: 9999,
+    color: '#fff',
+    fontFamily: 'sans-serif',
+    textAlign: 'center',
+    padding: '20px',
+    boxSizing: 'border-box'
+  });
+
+  // content container
+  const box = document.createElement('div');
+  box.style.maxWidth = '520px';
+  box.style.width = '90%';
+  box.style.background = 'rgba(255,255,255,0.03)';
+  box.style.padding = '26px';
+  box.style.borderRadius = '12px';
+  box.style.boxShadow = '0 8px 30px rgba(0,0,0,0.6)';
+
+  const title = document.createElement('h2');
+  title.style.margin = '0 0 12px';
+  title.style.fontSize = '28px';
+  title.innerText = win ? 'You Win!' : 'Game Over!';
+
+  const sub = document.createElement('p');
+  sub.style.margin = '0 0 18px';
+  sub.style.fontSize = '16px';
+  if (win) {
+    sub.innerText = `Nice work — you reached ${Math.floor(game.score)} points.`;
+  } else {
+    sub.innerText = `Score: ${Math.floor(game.score)} — try again to reach ${minScore} points.`;
+  }
+
+  // buttons container
+  const btnRow = document.createElement('div');
+  btnRow.style.display = 'flex';
+  btnRow.style.justifyContent = 'center';
+  btnRow.style.gap = '12px';
+  btnRow.style.marginTop = '14px';
+
+  // restart button
+  const restartBtn = document.createElement('button');
+  restartBtn.innerText = 'Restart';
+  Object.assign(restartBtn.style, {
+    padding: '10px 16px',
+    borderRadius: '9px',
+    border: 'none',
+    cursor: 'pointer',
+    fontWeight: 700,
+    background: '#f3b140',
+    color: '#042037'
+  });
+  restartBtn.addEventListener('click', () => {
+    overlay.remove();
+    startGame(); // restart game
+  });
+
+  btnRow.appendChild(restartBtn);
+
+  // if win, add Next button that goes to cutscene.html
+  if (win) {
+    const nextBtn = document.createElement('button');
+    nextBtn.innerText = 'Next';
+    Object.assign(nextBtn.style, {
+      padding: '10px 16px',
+      borderRadius: '9px',
+      border: 'none',
+      cursor: 'pointer',
+      fontWeight: 700,
+      background: '#6aa1ff',
+      color: '#042037'
+    });
+    nextBtn.addEventListener('click', () => {
+      // navigate to placeholder cutscene
+      window.location.href = 'cutscene.html';
+    });
+    btnRow.appendChild(nextBtn);
+  }
+
+  box.appendChild(title);
+  box.appendChild(sub);
+  box.appendChild(btnRow);
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+}
+
+// loop
+function loop(ts) {
+  const dt = ts - game.lastTime;
+  game.lastTime = ts;
+  if (game.running) {
+    game.elapsed += dt;
+    game.spawnTimer += dt;
+    if (game.spawnTimer > game.spawnInterval) {
+      spawnRandom(); game.spawnTimer = 0;
+    }
+    game.timer -= dt / 1000;
+    //if (game.timer <= 0) endGame(true);
+    if (game.timer <= 0) {
+      // time's up — check if player passed
+      if (game.score >= minScore) {
+        endGame(true); // player wins
+      } else {
+        endGame(false); // fail (game over)
+      }
+  }
+    player.update(dt);
+    game.projectiles.forEach(p => p.update(dt));
+    game.obstacles.forEach(o => o.update(dt));
+    checkCollisions();
+    game.projectiles = game.projectiles.filter(p => !p.dead);
+    game.obstacles = game.obstacles.filter(o => !o.hit && o.x > -100);
+    //game.score += dt * 0.02;
+    updateHUD();
+  }
+
+  ctx.clearRect(0, 0, cw, ch);
+  const grd = ctx.createLinearGradient(0,0,0,ch);
+  grd.addColorStop(0,'#4ec3ff'); grd.addColorStop(1,'#0b486b');
+  ctx.fillStyle = grd; ctx.fillRect(0,0,cw,ch);
+  for(let i=0;i<game.laneCount;i++){
+    const y = game.laneY[i];
+    ctx.fillStyle='rgba(255,255,255,0.03)';
+    ctx.fillRect(0,y-40,cw,80);
+  }
+  player.draw(ctx);
+  game.projectiles.forEach(p => p.draw(ctx));
+  game.obstacles.forEach(o => o.draw(ctx));
+
+  if (game.running) requestAnimationFrame(loop);
+}
+
+// start
+function resizeCanvas() {
+  cw = canvas.width = window.innerWidth;
+  ch = canvas.height = window.innerHeight;
+  computeLanes();
+}
+window.addEventListener("resize", resizeCanvas);
+function startGame() {
+  game.running = true;
+  game.elapsed = 0;
+  game.timer = 20;
+  game.score = 0;
+  game.lives = 3;
+  game.obstacles = [];
+  game.projectiles = [];
+  game.spawnTimer = 0;
+  player = new Player();
+  computeLanes();
+  player.y = game.laneY[player.lane];
+  game.lastTime = performance.now();
+  requestAnimationFrame(loop);
+}
+//resizeCanvas();
+//startGame();
+resizeCanvas();
+startGame();
+
+</script>
+
+</body>
+</html>
