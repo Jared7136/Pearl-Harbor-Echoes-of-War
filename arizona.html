@@ -10,7 +10,7 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     overflow: hidden;
     font-family: sans-serif;
     background-image: url("https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/background.png");
@@ -22,8 +22,10 @@
   .dialogue-container {
     display: flex;
     align-items: flex-end;
-    width: 80%;
+    justify-content: center;
+    width: 90%;
     margin-bottom: 50px;
+    position: relative;
   }
 
   .dialogue-box {
@@ -37,12 +39,18 @@
     background: rgba(0, 0, 0, 0.5);
     min-height: 80px;
     position: relative;
+    z-index: 2;
   }
 
   .character {
-    margin-left: 20px;
-    max-height: 300px;
-    border-radius: 8px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 80vh;        /* character fills about 80% of screen height */
+    width: auto;         /* keep aspect ratio */
+    object-fit: contain; /* scale without stretching */
+    z-index: 1;
+    pointer-events: none; /* click-through */
   }
 
   .cursor {
