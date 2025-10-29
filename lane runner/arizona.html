@@ -130,14 +130,11 @@
       dialogueEl.innerHTML = "";
       typeText();
     } else {
-     cursor.style.display = "none";
-      nextBtn.style.display = "none";
-      nextLevelBtn.style.display = "block"; // show Next Level button   
+      cursor.style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
     }
   }
-  nextLevelBtn.addEventListener("click", () => {
-    window.location.href = "runnertwo.html";
- });
+
   window.onload = typeText;
   document.getElementById("nextBtn").addEventListener("click", nextDialogue);
   document.addEventListener("keydown", (e) => {
