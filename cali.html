@@ -46,11 +46,13 @@
     position: absolute;
     right: 0;
     bottom: 0;
-    height: 80vh;        /* character fills about 80% of screen height */
-    width: auto;         /* keep aspect ratio */
-    object-fit: contain; /* scale without stretching */
-    z-index: 1;
-    pointer-events: none; /* click-through */
+    height: 80vh;
+    width: auto;
+    object-fit: contain;
+    z-index: 5; /* ensure it’s visible above the background */
+    pointer-events: none;
+    background: transparent;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
   }
 
   .cursor {
@@ -65,7 +67,6 @@
     50% { background: transparent; }
   }
 
-  /* Arrow button */
   .next-arrow {
     position: absolute;
     bottom: 10px;
