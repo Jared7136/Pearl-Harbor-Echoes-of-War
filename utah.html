@@ -10,17 +10,24 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: flex-end;
     overflow: hidden;
     font-family: sans-serif;
+    background-image: url("https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
+
   .dialogue-container {
-    position: 25%;
     display: flex;
     align-items: flex-end;
-    width: 80%;
+    justify-content: center;
+    width: 90%;
     margin-bottom: 50px;
+    position: relative;
   }
+
   .dialogue-box {
     flex: 1;
     padding: 20px 50px 20px 20px;
@@ -28,16 +35,26 @@
     color: white;
     font-size: 1.2rem;
     line-height: 1.4;
-    position: 25%;
-    backdrop-filter: blur(8px); /* background blur */
+    backdrop-filter: blur(8px);
     background: rgba(0, 0, 0, 0.5);
     min-height: 80px;
+    position: relative;
+    z-index: 2;
   }
+
   .character {
-    margin-left: 20px;
-    max-height: 300px;
-    border-radius: 8px;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 80vh;
+    width: auto;
+    object-fit: contain;
+    z-index: 5; /* ensure it’s visible above the background */
+    pointer-events: none;
+    background: transparent;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
   }
+
   .cursor {
     display: inline-block;
     width: 10px;
@@ -45,11 +62,11 @@
     animation: blink 0.7s steps(1) infinite;
     margin-left: 2px;
   }
+
   @keyframes blink {
     50% { background: transparent; }
   }
 
-  /* Arrow button */
   .next-arrow {
     position: absolute;
     bottom: 10px;
@@ -59,10 +76,33 @@
     user-select: none;
     animation: bounce 1s infinite;
   }
+
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
   }
+
+  #nextPageBtn {
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  padding: 10px 18px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  background: rgba(0, 0, 0, 0.6);
+  border: 2px solid white;
+  border-radius: 8px;
+  cursor: pointer;
+  z-index: 10;
+  display: none; /* Hidden by default */
+  backdrop-filter: blur(4px);
+  transition: 0.3s;
+}
+#nextPageBtn:hover {
+  background: rgba(255, 255, 255, 0.2);
+  transform: scale(1.05);
+}
 </style>
 </head>
 <body>
@@ -71,12 +111,13 @@
       <p id="dialogue"></p><span class="cursor"></span>
       <div class="next-arrow" id="nextBtn">▶</div>
     </div>
-    <img src="https://i.imgur.com/4AiXzf8.png" alt="Character" class="character">
+    <img class="character" id="character1" src="https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/mm.png" alt="Character">
   </div>
+  <button id="nextPageBtn" onclick="goNextPage()">Go Next ➜</button>
 
 <script>
   const dialogues = [
-  "Last pass... a smaller ship—USS Utah.",
+    "Last pass... a smaller ship—USS Utah.",
   "I almost hesitate. She’s not fighting back.",
   "Command calls her a battleship. We strike as ordered.",
   "Bombs away. The explosions tear through her hull.",
@@ -88,8 +129,8 @@
   "The mission is over. But inside—it feels like we lost something too."
   ];
 
-  let dialogueIndex = 0; // which line of dialogue we're on
-  let charIndex = 0; // current character index
+  let dialogueIndex = 0;
+  let charIndex = 0;
   const dialogueEl = document.getElementById("dialogue");
   const cursor = document.querySelector(".cursor");
 
@@ -97,44 +138,41 @@
     if (charIndex < dialogues[dialogueIndex].length) {
       dialogueEl.innerHTML += dialogues[dialogueIndex].charAt(charIndex);
       charIndex++;
-      setTimeout(typeText, 60); // typing speed
+      setTimeout(typeText, 60);
     }
   }
 
   function nextDialogue() {
-    // If still typing, finish instantly
     if (charIndex < dialogues[dialogueIndex].length) {
       dialogueEl.innerHTML = dialogues[dialogueIndex];
       charIndex = dialogues[dialogueIndex].length;
       return;
     }
 
-    // Otherwise, go to next dialogue
     if (dialogueIndex < dialogues.length - 1) {
       dialogueIndex++;
       charIndex = 0;
       dialogueEl.innerHTML = "";
       typeText();
     } else {
-      // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+      document.getElementById("nextPageBtn").style.display = "block";
     }
   }
 
-  // Start first dialogue
+  function goNextPage() {
+  window.location.href = "lane runner/runnerfour.html";
+}
+
   window.onload = typeText;
-
-  // Click arrow to advance
   document.getElementById("nextBtn").addEventListener("click", nextDialogue);
-
-  // Press space to advance
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space") {
-      e.preventDefault(); // prevent page scrolling
+      e.preventDefault();
       nextDialogue();
     }
   });
 </script>
 </body>
-</html> 
+</html>
