@@ -10,34 +10,44 @@
     height: 100vh;
     display: flex;
     justify-content: center;
-    align-items: center;
-    overflow: hidden;
+    align-items: flex-end;
+    background: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") center/cover no-repeat;
     font-family: sans-serif;
+    overflow: hidden;
   }
+
   .dialogue-container {
-    position: 25%;
+    position: relative;
     display: flex;
     align-items: flex-end;
-    width: 80%;
+    justify-content: space-between;
+    width: 90%;
+    max-width: 1000px;
     margin-bottom: 50px;
   }
+
   .dialogue-box {
     flex: 1;
-    padding: 20px 50px 20px 20px;
-    border-radius: 12px;
+    padding: 20px 60px 20px 20px;
+    border-radius: 16px;
     color: white;
     font-size: 1.2rem;
     line-height: 1.4;
-    position: 25%;
-    backdrop-filter: blur(8px); /* background blur */
-    background: rgba(0, 0, 0, 0.5);
-    min-height: 80px;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.55);
+    min-height: 100px;
+    position: relative;
+    box-shadow: 0 0 20px rgba(0,0,0,0.3);
   }
+
   .character {
-    margin-left: 20px;
-    max-height: 300px;
-    border-radius: 8px;
+    margin-left: 30px;
+    max-height: 320px;
+    object-fit: contain;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+    background: transparent;
   }
+
   .cursor {
     display: inline-block;
     width: 10px;
@@ -45,11 +55,11 @@
     animation: blink 0.7s steps(1) infinite;
     margin-left: 2px;
   }
+
   @keyframes blink {
     50% { background: transparent; }
   }
 
-  /* Arrow button */
   .next-arrow {
     position: absolute;
     bottom: 10px;
@@ -59,6 +69,7 @@
     user-select: none;
     animation: bounce 1s infinite;
   }
+
   @keyframes bounce {
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-5px); }
@@ -66,6 +77,7 @@
 </style>
 </head>
 <body>
+
   <div class="dialogue-container">
     <div class="dialogue-box">
       <p id="dialogue"></p><span class="cursor"></span>
@@ -76,20 +88,20 @@
 
 <script>
   const dialogues = [
-  "Our next run—USS California. Anchored alone near the shore.",
-  "She’s already seen the others burn. I can see crew scrambling to man the guns.",
-  "Dive! Bomb away!",
-  "The blast rocks her deck. Flames crawl over the surface.",
-  "A torpedo hits her side. The water rushes in.",
-  "She’s sinking slowly... refusing to give up.",
-  "Some of the men keep fighting, even as the deck disappears.",
-  "California slips beneath the harbor. Quietly. Stubbornly.",
-  "I whisper to myself... 'forgive us.'",
-  "History will remember this day—but not the faces I saw."
+    "Our next run—USS California. Anchored alone near the shore.",
+    "She’s already seen the others burn. I can see crew scrambling to man the guns.",
+    "Dive! Bomb away!",
+    "The blast rocks her deck. Flames crawl over the surface.",
+    "A torpedo hits her side. The water rushes in.",
+    "She’s sinking slowly... refusing to give up.",
+    "Some of the men keep fighting, even as the deck disappears.",
+    "California slips beneath the harbor. Quietly. Stubbornly.",
+    "I whisper to myself... 'forgive us.'",
+    "History will remember this day—but not the faces I saw."
   ];
 
-  let dialogueIndex = 0; // which line of dialogue we're on
-  let charIndex = 0; // current character index
+  let dialogueIndex = 0;
+  let charIndex = 0;
   const dialogueEl = document.getElementById("dialogue");
   const cursor = document.querySelector(".cursor");
 
@@ -97,44 +109,38 @@
     if (charIndex < dialogues[dialogueIndex].length) {
       dialogueEl.innerHTML += dialogues[dialogueIndex].charAt(charIndex);
       charIndex++;
-      setTimeout(typeText, 60); // typing speed
+      setTimeout(typeText, 60);
     }
   }
 
   function nextDialogue() {
-    // If still typing, finish instantly
     if (charIndex < dialogues[dialogueIndex].length) {
       dialogueEl.innerHTML = dialogues[dialogueIndex];
       charIndex = dialogues[dialogueIndex].length;
       return;
     }
 
-    // Otherwise, go to next dialogue
     if (dialogueIndex < dialogues.length - 1) {
       dialogueIndex++;
       charIndex = 0;
       dialogueEl.innerHTML = "";
       typeText();
     } else {
-      // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
     }
   }
 
-  // Start first dialogue
   window.onload = typeText;
-
-  // Click arrow to advance
   document.getElementById("nextBtn").addEventListener("click", nextDialogue);
 
-  // Press space to advance
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space") {
-      e.preventDefault(); // prevent page scrolling
+      e.preventDefault();
       nextDialogue();
     }
   });
 </script>
+
 </body>
-</html> 
+</html>
