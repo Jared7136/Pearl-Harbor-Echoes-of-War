@@ -17,7 +17,7 @@ class Player {
 
 
 		const image = new Image()
-		image.src = './img/spaceship.png'
+		image.src = './img/ship.png'
 		image.onload = () => {
 			const scale = 0.15
 			this.image = image
@@ -417,10 +417,10 @@ function animate(currentTime = 0) {
 		// player movement
 		if (keys.a.pressed && player.position.x >= 0) {
 			player.velocity.x = -7
-			player.rotation = -0.15
+			player.rotation = 0
 		} else if (keys.d.pressed && player.position.x + player.width <= canvas.width) {
 			player.velocity.x = 7
-			player.rotation = 0.15
+			player.rotation = 0
 		} else {
 			player.velocity.x = 0
 			player.rotation = 0
