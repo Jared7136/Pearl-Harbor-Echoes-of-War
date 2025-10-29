@@ -13,7 +13,7 @@
     align-items: center;
     overflow: hidden;
     font-family: sans-serif;
-    background-image: url('file:///C:/Users/jherv/OneDrive/Desktop/cutscenes%20for%20US/img/USS_OKLAHOMA.png');
+    background-image: url('./img/USS_OKLAHOMA.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -80,16 +80,16 @@
 
 <script>
   const dialogues = [
-"Smoke streaks the sky. The harbor’s a storm of fire and steel."
-"There—USS Oklahoma. She’s taking aim, trying to fight back."
-"Then—torpedoes in the water. We can see them coming, too fast to stop."
-"The first hit rocks the ship. The second tears through her side like thunder."
-"She starts to list... slowly at first... then the whole world tilts."
-"Men are leaping into the oil-covered water, calling out for help."
-"Oklahoma rolls completely—upside down in the harbor."
-"We can hear pounding from inside... then silence."
-"She’s gone. Hundreds trapped below the surface."
-"War isn’t glory. It’s the sound of everything falling apart."
+  "Smoke streaks the sky. The harbor’s a storm of fire and steel.",
+  "There—USS Oklahoma. She’s taking aim, trying to fight back.",
+  "Then—torpedoes in the water. We can see them coming, too fast to stop.",
+  "The first hit rocks the ship. The second tears through her side like thunder.",
+  "She starts to list... slowly at first... then the whole world tilts.",
+  "Men are leaping into the oil-covered water, calling out for help.",
+  "Oklahoma rolls completely—upside down in the harbor.",
+  "We can hear pounding from inside... then silence.",
+  "She’s gone. Hundreds trapped below the surface.",
+  "War isn’t glory. It’s the sound of everything falling apart."
   ];
 
   let dialogueIndex = 0; // which line of dialogue we're on
@@ -123,6 +123,30 @@
       // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+
+      //continue button
+      const continueBtn = document.createElement("button");
+      continueBtn.textContent = "Continue";
+      continueBtn.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        padding: 12px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px white;
+      `;
+      continueBtn.onmouseover = () => continueBtn.style.background = "rgba(255,255,255,0.2)";
+      continueBtn.onmouseout = () => continueBtn.style.background = "rgba(0,0,0,0.6)";
+
+      continueBtn.onclick = () => window.location.href = "./survivalAmericanGame.html"; // next level
+
+      document.querySelector(".dialogue-box").appendChild(continueBtn);
     }
   }
 

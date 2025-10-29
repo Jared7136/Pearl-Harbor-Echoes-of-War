@@ -269,8 +269,19 @@ function createParticles({object, color}) {
 	}
 }
 
-function animate() {
-	requestAnimationFrame(animate)
+let lastFrameTime = 0;
+const targetFPS = 60;
+const frameInterval = 1000 / targetFPS;
+
+
+function animate(currentTime = 0) {
+
+	requestAnimationFrame(animate);
+	const deltaTime = currentTime - lastFrameTime;
+
+	if (deltaTime < frameInterval) return;
+
+	lastFrameTime = currentTime;
 
 	// clear / background
 	c.fillStyle = '#44A7C4'
@@ -401,7 +412,7 @@ function animate() {
 	} else {
 	}
 	// Check for win condition
-	if (score >= 300 && game.active) {
+	if (score >= 1500 && game.active) {
 	    game.active = false;
 	    document.getElementById("message").innerText = "You Win!";
 	    projectiles.length = 0;
@@ -436,7 +447,7 @@ addEventListener('keydown', ({key}) => {
 						},
 						velocity: {
 							x: 0,
-							y: -10
+							y: -20
 						}
 					})
 				)
@@ -476,5 +487,5 @@ document.getElementById('restartBtn').addEventListener('click', () => {
 })
 
 document.getElementById("winButton").addEventListener("click", () => {
-    window.location.href = "./cutscene1.html";
+    window.location.href = "./arizona.html";
 });

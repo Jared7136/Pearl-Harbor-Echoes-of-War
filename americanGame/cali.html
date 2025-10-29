@@ -13,7 +13,7 @@
     align-items: center;
     overflow: hidden;
     font-family: sans-serif;
-    background-image: url('file:///C:/Users/jherv/OneDrive/Desktop/cutscenes%20for%20US/img/USS_CALI.png');
+    background-image: url('./img/USS_CALI.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -80,16 +80,16 @@
 
 <script>
   const dialogues = [
-"Our ship—USS California. Anchored near the shore."
-"We’ve already seen the others burn... Arizona, Oklahoma—one by one."
-"Incoming! Dive bombers overhead—sirens screaming through the smoke!"
-"The first blast hits—metal groans, the deck erupts in fire."
-"Then a torpedo... the whole ship shudders, water flooding the lower decks."
-"She’s going down slow, like she refuses to surrender."
-"Men stay at their posts, still firing, even as the ocean swallows the guns."
-"California sinks beneath the harbor—quietly, stubbornly."
-"We call out for the missing... for the ones who won’t answer back."
-"They say history will remember this day—but not the faces we’ve lost."
+  "Our ship—USS California. Anchored near the shore.",
+  "We’ve already seen the others burn... Arizona, Oklahoma—one by one.",
+  "Incoming! Dive bombers overhead—sirens screaming through the smoke!",
+  "The first blast hits—metal groans, the deck erupts in fire.",
+  "Then a torpedo... the whole ship shudders, water flooding the lower decks.",
+  "She’s going down slow, like she refuses to surrender.",
+  "Men stay at their posts, still firing, even as the ocean swallows the guns.",
+  "California sinks beneath the harbor—quietly, stubbornly.",
+  "We call out for the missing... for the ones who won’t answer back.",
+  "They say history will remember this day—but not the faces we’ve lost."
   ];
 
   let dialogueIndex = 0; // which line of dialogue we're on
@@ -123,6 +123,30 @@
       // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+
+      //continue button
+      const continueBtn = document.createElement("button");
+      continueBtn.textContent = "Continue";
+      continueBtn.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        padding: 12px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px white;
+      `;
+      continueBtn.onmouseover = () => continueBtn.style.background = "rgba(255,255,255,0.2)";
+      continueBtn.onmouseout = () => continueBtn.style.background = "rgba(0,0,0,0.6)";
+
+      continueBtn.onclick = () => window.location.href = "./survivalAmericanGameHard.html"; // next level
+
+      document.querySelector(".dialogue-box").appendChild(continueBtn);
     }
   }
 

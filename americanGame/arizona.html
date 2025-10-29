@@ -13,7 +13,7 @@
     align-items: center;
     overflow: hidden;
     font-family: sans-serif;
-    background-image: url('file:///C:/Users/jherv/OneDrive/Desktop/cutscenes%20for%20US/img/USS_ARIZONA.png');
+    background-image: url('./img/USS_ARIZONA.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -80,15 +80,15 @@
 
 <script>
   const dialogues = [
-"December 7, 1941... dawn breaks over Pearl Harbor."
-"It’s quiet—too quiet. Just another Sunday morning, or so we thought."
-"Then—sirens. The sky fills with planes marked with red suns."
-"Bombs falling—one after another. I see the Arizona... she’s been hit."
-"The explosion shakes the earth. A flash so bright it blinds the heart."
-"Men are shouting, running, praying. The air tastes like smoke and salt."
-"We try to fight back, but the harbor is burning—ships turning over, lives vanishing."
-"The Arizona is gone... 1,177 brothers trapped beneath the waves."
-"The sun keeps rising, but the morning feels like night."
+  "December 7, 1941... dawn breaks over Pearl Harbor.",
+  "It’s quiet—too quiet. Just another Sunday morning, or so we thought.",
+  "Then—sirens. The sky fills with planes marked with red suns.",
+  "Bombs falling—one after another. I see the Arizona... she’s been hit.",
+  "The explosion shakes the earth. A flash so bright it blinds the heart.",
+  "Men are shouting, running, praying. The air tastes like smoke and salt.",
+  "We try to fight back, but the harbor is burning—ships turning over, lives vanishing.",
+  "The Arizona is gone... 1,177 brothers trapped beneath the waves.",
+  "The sun keeps rising, but the morning feels like night."
   ];
 
   let dialogueIndex = 0; // which line of dialogue we're on
@@ -122,6 +122,30 @@
       // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+      
+      //continue button
+      const continueBtn = document.createElement("button");
+      continueBtn.textContent = "Continue";
+      continueBtn.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        padding: 12px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px white;
+      `;
+      continueBtn.onmouseover = () => continueBtn.style.background = "rgba(255,255,255,0.2)";
+      continueBtn.onmouseout = () => continueBtn.style.background = "rgba(0,0,0,0.6)";
+
+      continueBtn.onclick = () => window.location.href = "./survivalAmericanGameEasy.html"; // next level
+
+      document.querySelector(".dialogue-box").appendChild(continueBtn);
     }
   }
 

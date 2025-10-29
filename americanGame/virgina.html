@@ -13,7 +13,7 @@
     align-items: center;
     overflow: hidden;
     font-family: sans-serif;
-    background-image: url('file:///C:/Users/jherv/OneDrive/Desktop/cutscenes%20for%20US/img/USS_wVirginia.png');
+    background-image: url('./img/USS_wVirginia.png');
     background-size: cover;
     background-position: center;
     background-repeat: no-repeat;
@@ -80,17 +80,17 @@
 
 <script>
   const dialogues = [
-"USS West Virginia. I was just a cook that morning—serving breakfast like any other day."
-"Then the first explosion hit. The ship shook, dishes flew, men shouted."
-"Battle stations sounded, but I didn’t have one. Still, I ran topside."
-"Smoke everywhere. Flames rolling across the deck. The Tennessee beside us was burning too."
-"Captain Bennion was hit—badly. We tried to get him to safety, but he told us to keep fighting."
-"I saw the guns unmanned—.50 calibers just sitting there, empty."
-"I’d never fired one before, but I grabbed it anyway."
-"Could barely see through the smoke, just shapes diving out of the sun. I aimed and fired until the ammo was gone."
-"Didn’t count how many I hit. Didn’t think about it. Just kept shooting, for the men still trapped below."
-"When it was over, West Virginia was sinking—but I stayed until they ordered us off."
-"They called me a hero later. But all I remember are the faces, the fire, and the sound of that gun in my hands."
+  "USS West Virginia. I was just a cook that morning—serving breakfast like any other day.",
+  "Then the first explosion hit. The ship shook, dishes flew, men shouted.",
+  "Battle stations sounded, but I didn’t have one. Still, I ran topside.",
+  "Smoke everywhere. Flames rolling across the deck. The Tennessee beside us was burning too.",
+  "Captain Bennion was hit—badly. We tried to get him to safety, but he told us to keep fighting.",
+  "I saw the guns unmanned—.50 calibers just sitting there, empty.",
+  "I’d never fired one before, but I grabbed it anyway.",
+  "Could barely see through the smoke, just shapes diving out of the sun. I aimed and fired until the ammo was gone.",
+  "Didn’t count how many I hit. Didn’t think about it. Just kept shooting, for the men still trapped below.",
+  "When it was over, West Virginia was sinking—but I stayed until they ordered us off.",
+  "They called me a hero later. But all I remember are the faces, the fire, and the sound of that gun in my hands."
   ];
 
   let dialogueIndex = 0; // which line of dialogue we're on
@@ -124,6 +124,30 @@
       // End of dialogues
       cursor.style.display = "none";
       document.getElementById("nextBtn").style.display = "none";
+
+      //continue button
+      const continueBtn = document.createElement("button");
+      continueBtn.textContent = "Continue";
+      continueBtn.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        right: 20px;
+        padding: 12px 30px;
+        font-size: 20px;
+        border: none;
+        border-radius: 8px;
+        background: rgba(0, 0, 0, 0.6);
+        color: white;
+        cursor: pointer;
+        transition: 0.3s;
+        box-shadow: 0 0 10px white;
+      `;
+      continueBtn.onmouseover = () => continueBtn.style.background = "rgba(255,255,255,0.2)";
+      continueBtn.onmouseout = () => continueBtn.style.background = "rgba(0,0,0,0.6)";
+
+      continueBtn.onclick = () => window.location.href = "./survivalAmericanGameImpossible.html"; // next level
+
+      document.querySelector(".dialogue-box").appendChild(continueBtn);
     }
   }
 

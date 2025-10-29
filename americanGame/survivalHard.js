@@ -251,8 +251,8 @@ let game = {
 let canShoot = true
 let shootCooldown = 100
 let score = 0
-let difficultyMultiplier = 1
-let spawnRate = 800 
+let difficultyMultiplier = 1.3
+let spawnRate = 600 
 let difficultyTimer = 0
 let startTime = Date.now()
 const timerEl = document.getElementById('timerEl')
@@ -348,7 +348,7 @@ function animate(currentTime = 0) {
 		      `
 		      // Reattach restart button event
 		      document.getElementById('restartButton').addEventListener('click', () => {
-		        window.location.href = "./cali.html";
+		        window.location.href = "./utah.html";
 		      })
 		    }, 2000)
 		  }, 0)
@@ -436,10 +436,10 @@ function animate(currentTime = 0) {
 		frames++
 		difficultyTimer++
 
-		// Every 5 seconds, increase difficulty
-		if (difficultyTimer % 300 === 0) {
-			difficultyMultiplier += 0.2
-			spawnRate = Math.max(200, spawnRate - 50) // faster spawn rate
+		// Every 3.33 seconds, increase difficulty
+		if (difficultyTimer % 200 === 0) {
+			difficultyMultiplier += 0.3
+			spawnRate = Math.max(200, spawnRate - 100) // faster spawn rate
 			console.log("Difficulty increased:", difficultyMultiplier)
 		}
 	} else {

@@ -252,7 +252,7 @@ let canShoot = true
 let shootCooldown = 100
 let score = 0
 let difficultyMultiplier = 1
-let spawnRate = 800 
+let spawnRate = 1000 
 let difficultyTimer = 0
 let startTime = Date.now()
 const timerEl = document.getElementById('timerEl')
@@ -348,7 +348,7 @@ function animate(currentTime = 0) {
 		      `
 		      // Reattach restart button event
 		      document.getElementById('restartButton').addEventListener('click', () => {
-		        window.location.href = "./cali.html";
+		        window.location.href = "./oklahoma.html";
 		      })
 		    }, 2000)
 		  }, 0)
