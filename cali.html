@@ -11,41 +11,46 @@
     display: flex;
     justify-content: center;
     align-items: flex-end;
-    background: url("https://images.unsplash.com/photo-1507525428034-b723cf961d3e") center/cover no-repeat;
-    font-family: sans-serif;
     overflow: hidden;
+    font-family: sans-serif;
+    background-image: url("https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
   }
 
   .dialogue-container {
-    position: relative;
     display: flex;
     align-items: flex-end;
-    justify-content: space-between;
+    justify-content: center;
     width: 90%;
-    max-width: 1000px;
     margin-bottom: 50px;
+    position: relative;
   }
 
   .dialogue-box {
     flex: 1;
-    padding: 20px 60px 20px 20px;
-    border-radius: 16px;
+    padding: 20px 50px 20px 20px;
+    border-radius: 12px;
     color: white;
     font-size: 1.2rem;
     line-height: 1.4;
     backdrop-filter: blur(8px);
-    background: rgba(0, 0, 0, 0.55);
-    min-height: 100px;
+    background: rgba(0, 0, 0, 0.5);
+    min-height: 80px;
     position: relative;
-    box-shadow: 0 0 20px rgba(0,0,0,0.3);
+    z-index: 2;
   }
 
   .character {
-    margin-left: 30px;
-    max-height: 320px;
-    object-fit: contain;
-    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
-    background: transparent;
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 80vh;        /* character fills about 80% of screen height */
+    width: auto;         /* keep aspect ratio */
+    object-fit: contain; /* scale without stretching */
+    z-index: 1;
+    pointer-events: none; /* click-through */
   }
 
   .cursor {
@@ -60,6 +65,7 @@
     50% { background: transparent; }
   }
 
+  /* Arrow button */
   .next-arrow {
     position: absolute;
     bottom: 10px;
@@ -77,13 +83,12 @@
 </style>
 </head>
 <body>
-
   <div class="dialogue-container">
     <div class="dialogue-box">
       <p id="dialogue"></p><span class="cursor"></span>
       <div class="next-arrow" id="nextBtn">▶</div>
     </div>
-    <img src="https://i.imgur.com/4AiXzf8.png" alt="Character" class="character">
+    <img class="character" id="character1" src="https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/mm.png" alt="Character">
   </div>
 
 <script>
@@ -133,7 +138,6 @@
 
   window.onload = typeText;
   document.getElementById("nextBtn").addEventListener("click", nextDialogue);
-
   document.addEventListener("keydown", (e) => {
     if (e.code === "Space") {
       e.preventDefault();
@@ -141,6 +145,5 @@
     }
   });
 </script>
-
 </body>
 </html>
