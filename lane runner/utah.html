@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dialogue Box Typing Effect</title>
+<style>
+  body {
+    margin: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    overflow: hidden;
+    font-family: sans-serif;
+    background-image: url("https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/background.png");
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
+
+  .dialogue-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    width: 90%;
+    margin-bottom: 50px;
+    position: relative;
+  }
+
+  .dialogue-box {
+    flex: 1;
+    padding: 20px 50px 20px 20px;
+    border-radius: 12px;
+    color: white;
+    font-size: 1.2rem;
+    line-height: 1.4;
+    backdrop-filter: blur(8px);
+    background: rgba(0, 0, 0, 0.5);
+    min-height: 80px;
+    position: relative;
+    z-index: 2;
+  }
+
+  .character {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    height: 80vh;
+    width: auto;
+    object-fit: contain;
+    z-index: 5; /* ensure it’s visible above the background */
+    pointer-events: none;
+    background: transparent;
+    filter: drop-shadow(0 0 10px rgba(0,0,0,0.5));
+  }
+
+  .cursor {
+    display: inline-block;
+    width: 10px;
+    background: white;
+    animation: blink 0.7s steps(1) infinite;
+    margin-left: 2px;
+  }
+
+  @keyframes blink {
+    50% { background: transparent; }
+  }
+
+  .next-arrow {
+    position: absolute;
+    bottom: 10px;
+    right: 15px;
+    font-size: 1.5rem;
+    cursor: pointer;
+    user-select: none;
+    animation: bounce 1s infinite;
+  }
+
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-5px); }
+  }
+</style>
+</head>
+<body>
+  <div class="dialogue-container">
+    <div class="dialogue-box">
+      <p id="dialogue"></p><span class="cursor"></span>
+      <div class="next-arrow" id="nextBtn">▶</div>
+    </div>
+    <img class="character" id="character1" src="https://raw.githubusercontent.com/Jared7136/Pearl-Harbor-Echoes-of-War/main/mm.png" alt="Character">
+  </div>
+
+<script>
+  const dialogues = [
+    "Last pass... a smaller ship—USS Utah.",
+  "I almost hesitate. She’s not fighting back.",
+  "Command calls her a battleship. We strike as ordered.",
+  "Bombs away. The explosions tear through her hull.",
+  "She starts to roll over... it’s too fast, too final.",
+  "I see crew scrambling out, waving, some jumping into the sea.",
+  "She’s on her side now. The water closes around her.",
+  "Utah wasn’t even armed for war. Just a training ship.",
+  "I look at the harbor. Smoke, fire, silence.",
+  "The mission is over. But inside—it feels like we lost something too."
+  ];
+
+  let dialogueIndex = 0;
+  let charIndex = 0;
+  const dialogueEl = document.getElementById("dialogue");
+  const cursor = document.querySelector(".cursor");
+
+  function typeText() {
+    if (charIndex < dialogues[dialogueIndex].length) {
+      dialogueEl.innerHTML += dialogues[dialogueIndex].charAt(charIndex);
+      charIndex++;
+      setTimeout(typeText, 60);
+    }
+  }
+
+  function nextDialogue() {
+    if (charIndex < dialogues[dialogueIndex].length) {
+      dialogueEl.innerHTML = dialogues[dialogueIndex];
+      charIndex = dialogues[dialogueIndex].length;
+      return;
+    }
+
+    if (dialogueIndex < dialogues.length - 1) {
+      dialogueIndex++;
+      charIndex = 0;
+      dialogueEl.innerHTML = "";
+      typeText();
+    } else {
+      cursor.style.display = "none";
+      document.getElementById("nextBtn").style.display = "none";
+    }
+  }
+
+  window.onload = typeText;
+  document.getElementById("nextBtn").addEventListener("click", nextDialogue);
+  document.addEventListener("keydown", (e) => {
+    if (e.code === "Space") {
+      e.preventDefault();
+      nextDialogue();
+    }
+  });
+</script>
+</body>
+</html>
